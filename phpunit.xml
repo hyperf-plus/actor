@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         cacheResultFile=".phpunit.result.cache"
+         executionOrder="depends,defects"
+         forceCoversAnnotation="false"
+         beStrictAboutCoversAnnotation="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTodoAnnotatedTests="true"
+         failOnRisky="true"
+         failOnWarning="true"
+         verbose="true">
+    
+    <testsuites>
+        <!-- 单元测试 -->
+        <testsuite name="Unit">
+            <directory suffix="Test.php">./tests/Unit</directory>
+        </testsuite>
+        
+        <!-- 集成测试 -->
+        <testsuite name="Integration">
+            <directory suffix="Test.php">./tests/Integration</directory>
+        </testsuite>
+        
+        <!-- 性能测试 -->
+        <testsuite name="Performance">
+            <directory suffix="Test.php">./tests/Performance</directory>
+        </testsuite>
+        
+        <!-- 故障容错测试 -->
+        <testsuite name="FaultTolerance">
+            <directory suffix="Test.php">./tests/FaultTolerance</directory>
+        </testsuite>
+        
+        <!-- 功能测试 -->
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+
+    <coverage cacheDirectory=".phpunit.cache/code-coverage"
+              processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+        <exclude>
+            <directory>./vendor</directory>
+            <directory>./tests</directory>
+        </exclude>
+    </coverage>
+
+    <groups>
+        <include>
+            <group>default</group>
+        </include>
+        <exclude>
+            <group>performance</group>
+        </exclude>
+    </groups>
+
+    <php>
+        <env name="PHPUNIT_TESTING" value="true"/>
+        <env name="APP_ENV" value="testing"/>
+        <ini name="memory_limit" value="512M"/>
+        <ini name="display_errors" value="On"/>
+        <ini name="display_startup_errors" value="On"/>
+    </php>
+
+    <logging>
+        <junit outputFile="build/logs/junit.xml"/>
+        <testdoxHtml outputFile="build/logs/testdox.html"/>
+        <testdoxText outputFile="build/logs/testdox.txt"/>
+    </logging>
+</phpunit> 
