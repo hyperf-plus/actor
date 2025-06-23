@@ -1,0 +1,83 @@
+{
+  "name": "hyperf-plus/actor",
+  "type": "library",
+  "description": "HPlus Actor模型组件 - 高性能、多进程、高稳定性的Actor系统，专为游戏场景优化",
+  "keywords": [
+    "php",
+    "hyperf",
+    "hyperf-plus",
+    "actor",
+    "game",
+    "concurrency",
+    "multiprocess"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "毛自豪",
+      "email": "4213509@qq.com"
+    }
+  ],
+  "homepage": "https://github.com/lphkxd/hyperf-plus",
+  "support": {
+    "issues": "https://github.com/lphkxd/hyperf-plus/issues",
+    "source": "https://github.com/lphkxd/hyperf-plus/tree/main/actor"
+  },
+  "require": {
+    "php": ">=8.1",
+    "hyperf/config": "^3.1",
+    "hyperf/di": "^3.1.0",
+    "hyperf/framework": "^3.1.0",
+    "hyperf/process": "^3.1.0",
+    "hyperf/memory": "^3.1.0",
+    "hyperf/redis": "^3.1.0",
+    "hyperf/coroutine": "^3.1.0",
+    "ext-swoole": "*",
+    "ext-redis": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.0",
+    "mockery/mockery": "^1.5",
+    "friendsofphp/php-cs-fixer": "^3.0",
+    "phpstan/phpstan": "^1.10"
+  },
+  "suggest": {
+    "hyperf/metric": "For actor performance monitoring",
+    "hyperf/logger": "For actor system logging"
+  },
+  "autoload": {
+    "psr-4": {
+      "HPlus\\Actor\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "HPlus\\Actor\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit --colors=always",
+    "test-unit": "phpunit --colors=always tests/Unit",
+    "test-feature": "phpunit --colors=always tests/Feature",
+    "test-coverage": "phpunit --coverage-html coverage --coverage-text",
+    "test-performance": "phpunit --colors=always --group performance",
+    "analyse": "phpstan analyse src --level 8",
+    "cs-fix": "php-cs-fixer fix src",
+    "quality": [
+      "@test",
+      "@analyse",
+      "@cs-fix"
+    ]
+  },
+  "extra": {
+    "hyperf": {
+      "config": "HPlus\\Actor\\ConfigProvider"
+    }
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+} 
