@@ -40,6 +40,12 @@ class MailboxFactory
     private function createMailbox(string $actorPath): MailboxInterface
     {
         $capacity = $this->config->get('actor.mailbox.capacity', 1000);
+        
+        // 在测试环境中使用TestMailbox而不是Swoole Channel
+        if (defined('PHPUNIT_TESTING') || ($_ENV['PHPUNIT_TESTING'] ?? false)) {
+            return new TestMailbox($capacity);
+        }
+        
         return new Mailbox($capacity);
     }
 

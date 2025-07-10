@@ -100,11 +100,16 @@ $container->set(ConfigInterface::class, $configInterface);
 $container->set(LoggerFactory::class, new class() {
     public function get(string $name = 'default')
     {
-        return new class() {
-            public function info(string $message, array $context = []): void {}
-            public function warning(string $message, array $context = []): void {}
-            public function error(string $message, array $context = []): void {}
-            public function debug(string $message, array $context = []): void {}
+        return new class() implements \Psr\Log\LoggerInterface {
+            public function emergency(string|\Stringable $message, array $context = []): void {}
+            public function alert(string|\Stringable $message, array $context = []): void {}
+            public function critical(string|\Stringable $message, array $context = []): void {}
+            public function error(string|\Stringable $message, array $context = []): void {}
+            public function warning(string|\Stringable $message, array $context = []): void {}
+            public function notice(string|\Stringable $message, array $context = []): void {}
+            public function info(string|\Stringable $message, array $context = []): void {}
+            public function debug(string|\Stringable $message, array $context = []): void {}
+            public function log($level, string|\Stringable $message, array $context = []): void {}
         };
     }
 });

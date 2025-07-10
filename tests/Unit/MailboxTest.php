@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HPlus\Actor\Tests\Unit;
 
-use HPlus\Actor\Mailbox\Mailbox;
+use HPlus\Actor\Mailbox\TestMailbox;
 use HPlus\Actor\Mailbox\MailboxInterface;
 use HPlus\Actor\Mailbox\MailboxFactory;
 use HPlus\Actor\Message\Message;
@@ -17,7 +17,7 @@ class MailboxTest extends \TestCase
 {
     public function testMailboxCreation(): void
     {
-        $mailbox = new Mailbox(10);
+        $mailbox = new TestMailbox(10);
         
         $this->assertInstanceOf(MailboxInterface::class, $mailbox);
         $this->assertTrue($mailbox->isEmpty());
@@ -26,7 +26,7 @@ class MailboxTest extends \TestCase
 
     public function testEnqueueDequeue(): void
     {
-        $mailbox = new Mailbox(10);
+        $mailbox = new TestMailbox(10);
         $message = new Message('test', ['data' => 'value']);
 
         // 测试入队
@@ -43,7 +43,7 @@ class MailboxTest extends \TestCase
 
     public function testMultipleMessages(): void
     {
-        $mailbox = new Mailbox(10);
+        $mailbox = new TestMailbox(10);
         $messages = [];
 
         // 入队多个消息
@@ -66,7 +66,7 @@ class MailboxTest extends \TestCase
 
     public function testEmptyDequeue(): void
     {
-        $mailbox = new Mailbox(10);
+        $mailbox = new TestMailbox(10);
         
         $result = $mailbox->dequeue();
         $this->assertNull($result);
@@ -74,7 +74,7 @@ class MailboxTest extends \TestCase
 
     public function testClear(): void
     {
-        $mailbox = new Mailbox(10);
+        $mailbox = new TestMailbox(10);
 
         // 添加消息
         for ($i = 0; $i < 3; $i++) {
@@ -122,7 +122,7 @@ class MailboxTest extends \TestCase
      */
     public function testMailboxPerformance(): void
     {
-        $mailbox = new Mailbox(1000);
+        $mailbox = new TestMailbox(1000);
         $messageCount = 1000;
         
         $start = microtime(true);

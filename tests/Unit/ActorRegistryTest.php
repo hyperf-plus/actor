@@ -20,6 +20,28 @@ class TestActor extends AbstractActor
     }
 }
 
+// 带自定义参数的测试Actor
+class CustomTestActor extends AbstractActor
+{
+    private string $customValue;
+    
+    public function __construct(string $id, string $path, ActorContext $context, string $customValue = 'default')
+    {
+        parent::__construct($id, $path, $context);
+        $this->customValue = $customValue;
+    }
+    
+    public function receive(MessageInterface $message): mixed
+    {
+        return ['custom_value' => $this->customValue];
+    }
+    
+    public function getCustomValue(): string
+    {
+        return $this->customValue;
+    }
+}
+
 /**
  * Actor注册表测试
  */
@@ -31,26 +53,31 @@ class ActorRegistryTest extends \TestCase
     {
         parent::setUp();
         
-        // 创建必要的依赖
-        $this->container->set(\HPlus\Actor\Registry\ActorRegistry::class, \HPlus\Actor\Registry\ActorRegistry::class);
-        $this->container->set(\HPlus\Actor\Router\MessageRouter::class, \HPlus\Actor\Router\MessageRouter::class);
-        $this->container->set(\HPlus\Actor\Mailbox\MailboxFactory::class, \HPlus\Actor\Mailbox\MailboxFactory::class);
-        $this->container->set(\HPlus\Actor\System\ActorContext::class, function() {
-            return new ActorContext(
-                $this->container,
-                $this->container->get(\HPlus\Actor\Registry\ActorRegistry::class),
-                $this->container->get(\HPlus\Actor\Router\MessageRouter::class)
-            );
-        });
+        // 创建基础依赖
+        $mailboxFactory = new \HPlus\Actor\Mailbox\MailboxFactory($this->container, $this->container->get(\Hyperf\Contract\ConfigInterface::class));
+        $this->container->set(\HPlus\Actor\Mailbox\MailboxFactory::class, $mailboxFactory);
         
+        // 创建ActorRegistry（不依赖于其他Actor服务）
         $this->registry = new ActorRegistry($this->container);
+        $this->container->set(\HPlus\Actor\Registry\ActorRegistry::class, $this->registry);
+        
+        $messageRouter = new \HPlus\Actor\Router\MessageRouter($this->container, $this->registry, $mailboxFactory);
+        $this->container->set(\HPlus\Actor\Router\MessageRouter::class, $messageRouter);
+        
+        // 创建ActorContext（依赖于ActorRegistry）
+        $context = new ActorContext(
+            $this->container,
+            $this->registry,
+            $messageRouter
+        );
+        $this->container->set(\HPlus\Actor\System\ActorContext::class, $context);
     }
 
     public function testCreateActor(): void
     {
         $actorPath = $this->registry->create(TestActor::class, 'test-actor');
         
-        $this->assertStringContains('/user/test-actor', $actorPath);
+        $this->assertStringContainsString('/user/test-actor', $actorPath);
         
         $actor = $this->registry->get($actorPath);
         $this->assertInstanceOf(TestActor::class, $actor);
@@ -133,30 +160,11 @@ class ActorRegistryTest extends \TestCase
 
     public function testActorWithArguments(): void
     {
-        // 创建一个需要额外参数的Actor
-        $testActor = new class extends AbstractActor {
-            private string $customValue;
-            
-            public function __construct(string $id, string $path, ActorContext $context, string $customValue = 'default')
-            {
-                parent::__construct($id, $path, $context);
-                $this->customValue = $customValue;
-            }
-            
-            public function receive(MessageInterface $message): mixed
-            {
-                return ['custom_value' => $this->customValue];
-            }
-            
-            public function getCustomValue(): string
-            {
-                return $this->customValue;
-            }
-        };
-        
-        $actorPath = $this->registry->create(get_class($testActor), 'custom-actor', ['custom_test_value']);
+        $actorPath = $this->registry->create(CustomTestActor::class, 'custom-actor', ['custom_test_value']);
         $actor = $this->registry->get($actorPath);
         
+        $this->assertInstanceOf(CustomTestActor::class, $actor);
+        /** @var CustomTestActor $actor */
         $this->assertEquals('custom_test_value', $actor->getCustomValue());
     }
 

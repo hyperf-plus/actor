@@ -124,6 +124,11 @@ class RoomActor extends AbstractActor
     private function handlePlayerAction(array $payload): array
     {
         // 处理玩家游戏动作
+        if ($this->roomStatus === 'playing') {
+            // 广播玩家动作给所有其他玩家
+            $this->broadcastToPlayers('game.action_update', $payload);
+        }
+        
         return ['success' => true, 'message' => 'Action processed'];
     }
 
