@@ -48,7 +48,19 @@ class ActorContext
      */
     public function tell(string $actorPath, MessageInterface $message): void
     {
-        $this->router->route($message);
+        // 确保消息接收者为传入的 actorPath
+        // 由于 Message 是不可变的，这里通过重新构造消息来设置接收者
+        $newMessage = new \HPlus\Actor\Message\Message(
+            $message->getType(),
+            $message->getPayload(),
+            $actorPath,
+            $message->getSender(),
+            $message->getPriority(),
+            $message->needsReply(),
+            $message->getReplyTo()
+        );
+
+        $this->router->route($newMessage);
     }
 
     /**

@@ -40,8 +40,10 @@ class ActorRegistry
         }
 
         try {
-            // 创建Actor上下文
-            $context = $this->container->get(ActorContext::class);
+            // 创建Actor上下文（避免容器未绑定 ActorContext）
+            // 直接使用当前容器、注册表与路由器构造
+            $router = $this->container->get(\HPlus\Actor\Router\MessageRouter::class);
+            $context = new ActorContext($this->container, $this, $router);
             
             // 实例化Actor
             $actor = new $actorClass($id, $path, $context, ...$args);
